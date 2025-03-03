@@ -7,7 +7,7 @@ on:
       - fix-bun
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: magalucloud
+  IMAGE_NAME: magalucloud/s3-tester
   # IMAGE_NAME: ${{ github.repository }} test - remove after
 
 jobs:
