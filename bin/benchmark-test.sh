@@ -38,8 +38,11 @@ done
 # print the tools shasum
 shasum `which mgc` `which aws` `which rclone`
 
+# consistency test uses othe env, this sets a default value
+SIZE=${SIZE:-0}
+consistency_envs='--env SIZE="$SIZE" '
 # run the tests
-shellspec -c "$SCRIPT_PATH/../spec" --env CLIENTS="$clients" --env PROFILES="$profiles" --env SIZES="$sizes" --env QUANTITY="$quantity" --env TIMES="$times" --env WORKERS="$workers" --env DATE=$(date "+%Y-%m-%d.%H") -s bash $tag_args $args_after_double_dash
+shellspec -c "$SCRIPT_PATH/../spec" --env CLIENTS="$clients" --env PROFILES="$profiles" --env SIZES="$sizes" --env QUANTITY="$quantity" --env TIMES="$times" --env WORKERS="$workers" --env DATE=$(date "+%Y-%m-%d.%H") -s bash $tag_args $args_after_double_dash $consistency_envs
 
 # clean of buckets with list
 source "$SCRIPT_PATH/clear_buckets.sh" $profiles_to_clean
