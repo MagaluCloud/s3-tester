@@ -12,8 +12,7 @@ operation_gauge = Gauge(
 )
 
 def read_csv_and_update_metrics():
-    # report_folder = '/home/ubuntu/s3-tester/report/'
-    report_folder = '/home/folkz/projetos/s3-tester/report/'
+    report_folder = '/home/ubuntu/s3-tester/report/'
 
     # Limpe as métricas existentes
     operation_gauge.clear()
