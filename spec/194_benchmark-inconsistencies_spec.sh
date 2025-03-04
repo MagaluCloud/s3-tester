@@ -420,3 +420,337 @@ Describe 'Parameter, delete-objects'
     rm -rf "./temp-report-${quantity}-${size}"
   End
 End
+
+### Versioned tests
+
+# Testes com 1 objeto sem paralelismo
+
+Describe '1, get-object-versioned'
+  setup(){
+    bucket_name="test-194-$(date +%s)"
+    file1_name="LICENSE"
+  }
+  Before 'setup'
+  Parameters:matrix
+    $PROFILES
+    $CLIENTS
+  End
+  Example "bucket exists on profile $1 using client $2" id:"194"
+    profile=$1
+    client=$2
+    test_bucket_name="$bucket_name-$client-$profile"
+    aws --profile $profile s3 mb s3://$test_bucket_name > /dev/null
+    aws s3api put-bucket-versioning --bucket $test_bucket_name --versioning-configuration Status=Enabled > /dev/null
+    aws --profile $profile s3 cp $file1_name s3://$test_bucket_name > /dev/null
+
+    case "$client" in
+      "aws-s3api" | "aws" | "aws-s3" | "rclone" | "mgc")
+        start_time=$(date +%s%3N)
+        validate_key_in_objects "get-object" "$profile" "$test_bucket_name" "$file1_name"
+        if [ $? -eq 0 ]; then
+          echo "Key '$file1_name' found in bucket '$test_bucket_name'."
+        else
+          echo "Key '$file1_name' not found in bucket '$test_bucket_name'."
+        fi
+        end_time=$(date +%s%3N)
+        object_exists_time=$((end_time - start_time))
+        ;;
+    esac
+    echo "1,1,1,get-object-versioned,$profile,$client,$object_exists_time" >> ./report/report-inconsistencies.csv
+    rclone purge $profile:$test_bucket_name > /dev/null
+  End
+End
+
+Describe '1, list-objects-versioned'
+  setup(){
+    bucket_name="test-194-$(date +%s)"
+    file1_name="LICENSE"
+  }
+  Before 'setup'
+  Parameters:matrix
+    $PROFILES
+    $CLIENTS
+  End
+  Example "bucket exists on profile $1 using client $2" id:"194"
+    profile=$1
+    client=$2
+    test_bucket_name="$bucket_name-$client-$profile"
+    aws --profile $profile s3 mb s3://$test_bucket_name > /dev/null
+    aws s3api put-bucket-versioning --bucket $test_bucket_name --versioning-configuration Status=Enabled > /dev/null
+    aws --profile $profile s3 cp $file1_name s3://$test_bucket_name > /dev/null
+
+    case "$client" in
+      "aws-s3api" | "aws" | "aws-s3" | "rclone" | "mgc")
+        start_time=$(date +%s%3N)
+        validate_key_in_objects "list-objects" "$profile" "$test_bucket_name" "$file1_name"
+        end_time=$(date +%s%3N)
+        object_exists_time=$((end_time - start_time))
+        ;;
+    esac
+    echo "1,1,1,list-objects-versioned,$profile,$client,$object_exists_time" >> ./report/report-inconsistencies.csv
+    rclone purge $profile:$test_bucket_name > /dev/null
+  End
+End
+
+Describe '1, head-object-vesioned'
+  setup(){
+    bucket_name="test-194-$(date +%s)"
+    file1_name="LICENSE"
+  }
+  Before 'setup'
+  Parameters:matrix
+    $PROFILES
+    $CLIENTS
+  End
+  Example "bucket exists on profile $1 using client $2" id:"194"
+    profile=$1
+    client=$2
+    test_bucket_name="$bucket_name-$client-$profile"
+    aws --profile $profile s3 mb s3://$test_bucket_name > /dev/null
+    aws s3api put-bucket-versioning --bucket $test_bucket_name --versioning-configuration Status=Enabled > /dev/null
+    aws --profile $profile s3 cp $file1_name s3://$test_bucket_name > /dev/null
+
+    case "$client" in
+      "aws-s3api" | "aws" | "aws-s3" | "rclone" | "mgc")
+        start_time=$(date +%s%3N)
+        validate_key_in_objects "head-object" "$profile" "$test_bucket_name" "$file1_name"
+        if [ $? -eq 0 ]; then
+          echo "Key '$file1_name' found in bucket '$test_bucket_name'."
+        else
+          echo "Key '$file1_name' not found in bucket '$test_bucket_name'."
+        fi
+        end_time=$(date +%s%3N)
+        object_exists_time=$((end_time - start_time))
+        ;;
+    esac
+    echo "1,1,1,head-object-vesioned,$profile,$client,$object_exists_time" >> ./report/report-inconsistencies.csv
+    rclone purge $profile:$test_bucket_name > /dev/null
+  End
+End
+
+# Testes com parametros de quantidade, tamanho e workers
+
+Describe 'Parameter, get-object-versioned'
+  setup(){
+    bucket_name="test-get-object-$(date +%s)"
+    file1_name="LICENSE"
+  }
+  Before 'setup'
+  Parameters:matrix
+    $PROFILES
+    $CLIENTS
+    $QUANTITY
+    $WORKERS
+    $SIZE
+  End
+  Example "bucket exists on profile $1 using client $2 with $3 objects" id:"194"
+    profile=$1
+    client=$2
+    quantity=$3
+    workers=$4
+    size=$5
+    test_bucket_name="$bucket_name-$client-$profile"
+    aws --profile $profile s3 mb s3://$test_bucket_name > /dev/null
+    aws s3api put-bucket-versioning --bucket $test_bucket_name --versioning-configuration Status=Enabled > /dev/null
+
+    create_temp_objects $quantity $size
+    mgc workspace set $profile > /dev/null
+    mgc object-storage objects upload-dir ./temp-report-${quantity}-${size} $test_bucket_name/${quantity}-${size}/ --workers $workers
+
+    # Validar o último objeto usando get-object
+    last_object_name="${quantity}-${size}/arquivo_$quantity.txt"
+    start_time=$(date +%s%3N)
+    validate_key_in_objects "get-object" "$profile" "$test_bucket_name" "$last_object_name"
+    if [ $? -eq 0 ]; then
+      echo "Key '$last_object_name' found in bucket '$test_bucket_name' using get-object."
+    else
+      echo "Key '$last_object_name' not found in bucket '$test_bucket_name' using get-object."
+    fi
+    end_time=$(date +%s%3N)
+    get_object_time=$((end_time - start_time))
+
+    # Salvar resultados no CSV
+    echo "$quantity,$size,$workers,get-object-versioned,$profile,$client,$get_object_time" >> ./report/report-inconsistencies.csv
+
+    # Limpar o bucket
+    rclone purge $profile:$test_bucket_name > /dev/null
+  End
+End
+
+Describe 'Parameter, list-objects-versioned'
+  setup(){
+    bucket_name="test-list-objects-$(date +%s)"
+    file1_name="LICENSE"
+  }
+  Before 'setup'
+  Parameters:matrix
+    $PROFILES
+    $CLIENTS
+    $QUANTITY
+    $WORKERS
+    $SIZE
+  End
+  Example "bucket exists on profile $1 using client $2 with $3 objects" id:"194"
+    profile=$1
+    client=$2
+    quantity=$3
+    workers=$4
+    size=$5
+    test_bucket_name="$bucket_name-$client-$profile"
+    aws --profile $profile s3 mb s3://$test_bucket_name > /dev/null
+    aws s3api put-bucket-versioning --bucket $test_bucket_name --versioning-configuration Status=Enabled > /dev/null
+
+    create_temp_objects $quantity $size
+    mgc workspace set $profile > /dev/null
+    mgc object-storage objects upload-dir ./temp-report-${quantity}-${size} $test_bucket_name/${quantity}-${size}/ --workers $workers
+
+    # Validar o último objeto usando list-objects
+    last_object_name="${quantity}-${size}/arquivo_$quantity.txt"
+    start_time=$(date +%s%3N)
+    validate_key_in_objects "list-objects" "$profile" "$test_bucket_name" "$last_object_name"
+    if [ $? -eq 0 ]; then
+      echo "Key '$last_object_name' found in bucket '$test_bucket_name' using list-objects."
+    else
+      echo "Key '$last_object_name' not found in bucket '$test_bucket_name' using list-objects."
+    fi
+    end_time=$(date +%s%3N)
+    list_objects_time=$((end_time - start_time))
+
+    # Salvar resultados no CSV
+    echo "$quantity,$size,$workers,list-objects-versioned,$profile,$client,$list_objects_time" >> ./report/report-inconsistencies.csv
+
+    # Limpar o bucket
+    rclone purge $profile:$test_bucket_name > /dev/null
+  End
+End
+
+Describe 'Parameter, head-object-versioned'
+  setup(){
+    bucket_name="test-head-object-$(date +%s)-$RANDOM"
+    file1_name="LICENSE"
+  }
+  Before 'setup'
+  Parameters:matrix
+    $PROFILES
+    $CLIENTS
+    $QUANTITY
+    $WORKERS
+    $SIZE
+  End
+  Example "bucket exists on profile $1 using client $2 with $3 objects" id:"194"
+    profile=$1
+    client=$2
+    quantity=$3
+    workers=$4
+    size=$5
+    test_bucket_name="$bucket_name-$client-$profile"
+
+    aws --profile $profile s3 mb s3://$test_bucket_name > /dev/null
+    aws s3api put-bucket-versioning --bucket $test_bucket_name --versioning-configuration Status=Enabled > /dev/null
+
+
+    create_temp_objects $quantity $size
+    if [ ! -d "./temp-report-${quantity}-${size}" ]; then
+      echo "Directory './temp-report-${quantity}-${size}' does not exist."
+      exit 1
+    fi
+
+    # Fazer upload dos objetos
+    mgc workspace set $profile > /dev/null
+    mgc object-storage objects upload-dir ./temp-report-${quantity}-${size} $test_bucket_name/${quantity}-${size}/ --workers $workers
+    if [ $? -ne 0 ]; then
+      echo "Failed to upload objects to bucket '$test_bucket_name'."
+      exit 1
+    fi
+
+    # Validar o último objeto usando head-object
+    last_object_name="${quantity}-${size}/arquivo_$quantity.txt"
+
+    start_time=$(date +%s%3N)
+    validate_key_in_objects "head-object" "$profile" "$test_bucket_name" "$last_object_name"
+    end_time=$(date +%s%3N)
+    head_object_time=$((end_time - start_time))
+
+    # Salvar resultados no CSV
+    echo "$quantity,$size,$workers,head-object-versioned,$profile,$client,$head_object_time" >> ./report/report-inconsistencies.csv
+
+    # Limpar o bucket
+    rclone purge $profile:$test_bucket_name > /dev/null
+    rm -rf "./temp-report-${quantity}-${size}"
+  End
+End
+
+# Testes com delete e validações
+
+Describe '1, delete-object-versioned'
+  setup(){
+    bucket_name="test-delete-object-$(date +%s)"
+    file1_name="LICENSE"
+  }
+  Before 'setup'
+  Parameters:matrix
+    $PROFILES
+    $CLIENTS
+  End
+  Example "delete object on profile $1 using client $2" id:"194"
+    profile=$1
+    client=$2
+    test_bucket_name="$bucket_name-$client-$profile"
+    aws --profile $profile s3 mb s3://$test_bucket_name > /dev/null
+    aws s3api put-bucket-versioning --bucket $test_bucket_name --versioning-configuration Status=Enabled > /dev/null
+    aws --profile $profile s3 cp $file1_name s3://$test_bucket_name > /dev/null
+    aws --profile $profile s3api delete-object --bucket $test_bucket_name --key $file1_name > /dev/null
+
+    start_time=$(date +%s%3N)
+    validate_key_in_objects "list-objects" "$profile" "$test_bucket_name" "None"
+    end_time=$(date +%s%3N)
+    deletion_time=$((end_time - start_time))
+
+    # Salvar resultados no CSV
+    echo "1,1,1,delete-object-versioned,$profile,$client,$deletion_time" >> ./report/report-inconsistencies.csv
+
+    # Limpar o bucket
+    rclone purge $profile:$test_bucket_name > /dev/null
+  End
+End
+
+Describe 'Parameter, delete-objects-versioned'
+  setup(){
+    bucket_name="test-delete-objects-$(date +%s)"
+  }
+  Before 'setup'
+  Parameters:matrix
+    $PROFILES
+    $CLIENTS
+    $QUANTITY
+    $WORKERS
+    $SIZE
+  End
+  Example "delete $3 objects on profile $1 using client $2" id:"194"
+    profile=$1
+    client=$2
+    quantity=$3
+    workers=$4
+    size=$5
+    test_bucket_name="$bucket_name-$client-$profile"
+
+    aws --profile $profile s3 mb s3://$test_bucket_name > /dev/null
+    aws s3api put-bucket-versioning --bucket $test_bucket_name --versioning-configuration Status=Enabled > /dev/null
+
+    create_temp_objects $quantity $size
+
+    mgc workspace set $profile > /dev/null
+    mgc object-storage objects upload-dir ./temp-report-${quantity}-${size} $test_bucket_name/${quantity}-${size}/ --workers $workers
+
+    aws --profile $profile s3 rm s3://$test_bucket_name --recursive > /dev/null
+    start_time=$(date +%s%3N)
+    validate_key_in_objects "list-objects" "$profile" "$test_bucket_name" "None"
+    end_time=$(date +%s%3N)
+    deletion_time=$((end_time - start_time))
+
+    echo "$quantity,$size,$workers,delete-objects-versioned,$profile,$client,$deletion_time" >> ./report/report-inconsistencies.csv
+
+    rclone purge $profile:$test_bucket_name > /dev/null
+    rm -rf "./temp-report-${quantity}-${size}"
+  End
+End
