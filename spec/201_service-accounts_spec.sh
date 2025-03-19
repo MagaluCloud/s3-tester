@@ -138,7 +138,7 @@ Describe "Service Accounts: " category:"ServiceAccounts"  id:"201"
         # sa_key_email="sa5@IDM-Q2QZ-LI1-5BFS.sa.idmagalu.com"
         # sa_policy_principal="$sa_tenant_id:sa/$sa_key_email"
         # sa de organization
-        sa_tenant_id="sa_s3tests@RSA-5677.sa.idmagalu.com"
+        sa_tenant_id="8d475459-5f6a-4892-b149-d7e4de0d764d"
         sa_key_email="sa3@HDN-2582.sa.idmagalu.com"
         sa_policy_principal="$sa_tenant_id:sa/$sa_key_email"
 
