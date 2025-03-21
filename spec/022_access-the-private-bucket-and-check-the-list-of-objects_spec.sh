@@ -1,4 +1,4 @@
-Describe 'Access the private bucket and check the list of objects:' category:"BucketPermission"
+Describe 'Access the private bucket and check the list of objects:' category:"BucketPermission" category:"quick"
   setup(){
     bucket_name="test-022-$(date +%s)"
     file1_name="LICENSE"

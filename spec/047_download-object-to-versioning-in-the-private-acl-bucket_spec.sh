@@ -3,7 +3,7 @@ is_variable_null() {
   [ -z "$1" ]
 }
 
-Describe 'Download object to versioning in the private ACL bucket:' category:"ObjectVersioning"
+Describe 'Download object to versioning in the private ACL bucket:' category:"ObjectVersioning" category:"quick"
   setup(){
     bucket_name="test-047-$(date +%s)"
     file1_name="LICENSE"

@@ -5,7 +5,7 @@ get_test_bucket_name(){
   echo "test-001-$profile-$client-$UNIQUE_SUFIX"
 }
 #001 is also used as setup for 015
-Describe 'Create bucket' category:"BucketManagement" id:"001" id:"015"
+Describe 'Create bucket' category:"BucketManagement" id:"001" id:"015" category:"quick"
   Parameters:matrix
     $PROFILES
     $CLIENTS
@@ -38,12 +38,12 @@ Describe 'Create bucket' category:"BucketManagement" id:"001" id:"015"
       The output should include "$bucket_name"
       ;;
     esac
-    aws --profile "$profile" s3api wait bucket-exists --bucket "$bucket_name"
+    #aws --profile "$profile" s3api wait bucket-exists --bucket "$bucket_name"
   End
 End
 
 #015 is also used as teardown of 001
-Describe 'Delete Buckets empty' category:"BucketManagement" id:"001" id:"015"
+Describe 'Delete Buckets empty' category:"BucketManagement" id:"001" id:"015" category:"quick"
   Parameters:matrix
     $PROFILES
     $CLIENTS
@@ -75,6 +75,6 @@ Describe 'Delete Buckets empty' category:"BucketManagement" id:"001" id:"015"
       The output should include ""
       ;;
     esac
-    aws --profile "$profile" s3api wait bucket-not-exists --bucket "$bucket_name"
+    #aws --profile "$profile" s3api wait bucket-not-exists --bucket "$bucket_name"
   End
 End

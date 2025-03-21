@@ -1,4 +1,4 @@
-Describe 'Download object to versioning in the private bucket:' category:"ObjectVersioning"
+Describe 'Download object to versioning in the private bucket:' category:"ObjectVersioning" category:"quick"
   setup(){
     bucket_name="test-046-$(date +%s)"
     file1_name="LICENSE"

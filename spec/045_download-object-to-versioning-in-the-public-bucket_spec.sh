@@ -1,5 +1,5 @@
 Include ./spec/019_utils.sh
-Describe 'Download object to versioning in the public bucket:' category:"ObjectVersioning"
+Describe 'Download object to versioning in the public bucket:' category:"ObjectVersioning" category:"quick"
   setup(){
     bucket_name="test-045-$(date +%s)"
     file1_name="LICENSE"

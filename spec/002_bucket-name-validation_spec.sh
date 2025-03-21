@@ -22,7 +22,7 @@ check_length() {
     fi
 }
 
-Describe 'Create bucket' category:"BucketManagement"
+Describe 'Create bucket' category:"BucketManagement" category:"quick"
   Parameters:matrix
     $PROFILES
     $CLIENTS
@@ -61,7 +61,7 @@ Describe 'Create bucket' category:"BucketManagement"
   End
 
   bucket_name="212121$(openssl rand -hex 40 | tr -dc '0-9' | head -c 40)"
-  Describe "with VALID name with only numbers $bucket_name"  id:006
+  Describe "with VALID name with only numbers $bucket_name"  id:006 
     Example "on profile $1 using client $2"
       profile=$1
       client=$2

@@ -1,4 +1,4 @@
-Describe 'Set the versioning for a public bucket:' category:"ObjectVersioning"
+Describe 'Set the versioning for a public bucket:' category:"ObjectVersioning" category:"quick"
   setup(){
     bucket_name="test-039-$(date +%s)"
     file1_name="LICENSE"

@@ -1,4 +1,4 @@
-Describe 'Delete Bucket versioned:' category:"ObjectVersioning"
+Describe 'Delete Bucket versioned:' category:"ObjectVersioning" category:"quick"
   setup(){
     bucket_name="test-048-$(date +%s)"
     file1_name="LICENSE"

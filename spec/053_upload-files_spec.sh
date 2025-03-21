@@ -22,7 +22,7 @@ Include ./spec/053_utils.sh
 % UNIQUE_SUFIX: $(date +%s)
 % FILES: "LICENSE README.md profiles.example.yaml"
 
-Describe 'Setup 53,57,61,62,63' category:"ObjectManagement"
+Describe 'Setup 53,57,61,62,63' category:"ObjectManagement" category:"slow"
   Parameters:matrix
     $PROFILES
   End
@@ -35,7 +35,7 @@ Describe 'Setup 53,57,61,62,63' category:"ObjectManagement"
   End
 End
 
-Describe 'Upload Files' category:"ObjectManagement"
+Describe 'Upload Files' category:"ObjectManagement" category:"slow"
   Parameters:matrix
     $PROFILES
     $CLIENTS
@@ -77,7 +77,7 @@ Describe 'Upload Files' category:"ObjectManagement"
     # Assert that the file was uploaded by waiting for object-exists
     aws s3api --profile $profile wait object-exists --bucket $BUCKET_NAME --key $key
   End
-  Describe 'Download Files' category:"ObjectManagement" id:"057"
+  Describe 'Download Files' category:"ObjectManagement" id:"057" category:"slow"
     Example "from test bucket of profile $1, The file $3, using client $2"
       profile=$1
       client=$2
@@ -115,7 +115,7 @@ Describe 'Upload Files' category:"ObjectManagement"
     End
   End
 End
-Describe 'List Objects' category:"ObjectManagement" id:"061"
+Describe 'List Objects' category:"ObjectManagement" id:"061" category:"slow"
   Parameters:matrix
     $PROFILES
     $CLIENTS
@@ -166,7 +166,7 @@ End
 first_file="${FILES%% *}"
 remaining_files="${FILES#* }"
 
-Describe 'Delete' category:"ObjectManagement"
+Describe 'Delete' category:"ObjectManagement" category:"slow"
   Parameters:matrix
     $PROFILES
     $CLIENTS
@@ -278,7 +278,7 @@ End
 teardown(){
   remove_test_bucket $profile $UNIQUE_SUFIX
 }
-Describe 'Teardown 53,57,61,62,63' category:"ObjectManagement"
+Describe 'Teardown 53,57,61,62,63' category:"ObjectManagement" category:"slow"
   Parameters:matrix
     $PROFILES
   End
