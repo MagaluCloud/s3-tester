@@ -1,6 +1,6 @@
 Include ./spec/019_utils.sh
 
-Describe 'Delete large bucket with 100 objects:' category:"BigBuckets"
+Describe 'Delete large bucket with 100 objects:' category:"BigBuckets" category:"slow"
   setup(){
     bucket_name="test-093-$(date +%s)"
     files_count=100
@@ -54,7 +54,7 @@ Describe 'Delete large bucket with 100 objects:' category:"BigBuckets"
   End
 End
 
-Describe 'Delete large bucket with 1000 objects:' category:"BigBuckets"
+Describe 'Delete large bucket with 1000 objects:' category:"BigBuckets" category:"slow"
   setup(){
     bucket_name="test-093-$(date +%s)"
     files_count=1000

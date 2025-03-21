@@ -1,6 +1,6 @@
 Include ./spec/019_utils.sh
 
-Describe 'Create public bucket:' category:"BucketPermission"
+Describe 'Create public bucket:' category:"BucketPermission" category:"quick"
   setup(){
     bucket_name="test-018-$(date +%s)"
     file1_name="LICENSE"

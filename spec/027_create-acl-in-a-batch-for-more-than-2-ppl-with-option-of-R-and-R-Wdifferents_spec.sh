@@ -3,7 +3,7 @@ is_variable_null() {
 }
 
 
-Describe 'Create ACL in a batch for more than 2 ppl with option of R and R/W differents:' category:"BucketPermission"
+Describe 'Create ACL in a batch for more than 2 ppl with option of R and R/W differents:' category:"BucketPermission" category:"quick"
   setup(){
     bucket_name="test-027-$(date +%s)"
     file1_name="LICENSE"

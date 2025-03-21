@@ -2,7 +2,7 @@ is_variable_null() {
   [ -z "$1" ]
 }
 
-Describe 'Upload object to versioning in the private acl bucket:' category:"ObjectVersioning"
+Describe 'Upload object to versioning in the private acl bucket:' category:"ObjectVersioning" category:"quick"
   setup(){
     bucket_name="test-044-$(date +%s)"
     file1_name="LICENSE"

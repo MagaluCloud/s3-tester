@@ -1,4 +1,4 @@
-Describe 'Delete bucket with objects with versions:' category:"Skip"
+Describe 'Delete bucket with objects with versions:' category:"Skip" category:"quick"
   setup(){
     bucket_name="test-050-$(date +%s)"
     file1_name="LICENSE"

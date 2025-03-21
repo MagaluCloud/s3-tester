@@ -3,7 +3,7 @@ is_variable_null() {
   [ -z "$1" ]
 }
 
-Describe 'Set bucket label:' category:"BucketLabelling"
+Describe 'Set bucket label:' category:"BucketLabelling" category:"slow"
   setup(){
     bucket_name="test-103-$(date +%s)"
     file1_name="LICENSE"
@@ -37,7 +37,7 @@ Describe 'Set bucket label:' category:"BucketLabelling"
   End
 End
 
-Describe 'Get bucket label:' category:"BucketLabelling"
+Describe 'Get bucket label:' category:"BucketLabelling" category:"slow"
   setup(){
     bucket_name="test-103-$(date +%s)"
     file1_name="LICENSE"
