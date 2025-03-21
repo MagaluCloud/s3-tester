@@ -1,0 +1,152 @@
+setup:
+    - create-bucket:
+        - put-obj-lock-config={"Mode":null}:
+            - assert err-code={"Code":"InvalidBucketState"} # not versioned
+        - put-obj-lock-config={"Mode":"COMPLIANCE","Days":10}:
+            - assert err-code={"Code":"InvalidBucketState"} # not versioned
+        - put-obj-lock-config={"Mode":"COMPLIANCE","Days":20}:
+            - assert err-code={"Code":"InvalidBucketState"} # not versioned
+        - put-obj-lock-config={"Mode":"COMPLIANCE","Years":1}:
+            - assert err-code={"Code":"InvalidBucketState"} # not versioned
+        - put-obj-lock-config={"Mode":"COMPLIANCE","Years":2}:
+            - assert err-code={"Code":"InvalidBucketState"} # not versioned
+        - put-obj-lock-config={"Mode":"GOVERNANCE","Days":10}:
+            - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+        - put-obj-lock-config={"Mode":"GOVERNANCE","Days":20}:
+            - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+        - put-obj-lock-config={"Mode":"GOVERNANCE","Years":1}:
+            - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+        - put-obj-lock-config={"Mode":"GOVERNANCE","Years":2}:
+            - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+        - enable-versioning:
+            - put-obj-lock-config={"Mode":null}:
+                - put-object create-mp copy-object:
+                    - get-object-retention:
+                        - assert err-code={"Code":"NoSuchObjectLockConfiguration"}
+                    - put-object-retention={"Mode":"COMPLIANCE","Date":"2030-01-01"}:
+                        - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2030-01-01T00:00:00Z"}}
+                        - delete-object
+                        - delete-version:
+                            - assert err-code={"Code":"AccessDenied"}
+                        - put-object-retention={"Mode":"COMPLIANCE","Date":"2029-01-01"}: # before
+                            - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2029-01-01T00:00:00Z"}}
+                        - put-object-retention={"Mode":"COMPLIANCE","Date":"2031-01-01"}: # after
+                            - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2031-01-01T00:00:00Z"}}
+                - put-object={"Mode":"COMPLIANCE","Date":"2030-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2030-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2030-01-01"}:
+                    - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2030-01-01T00:00:00Z"}}
+                    - delete-object
+                    - delete-version:
+                        - assert err-code={"Code":"AccessDenied"}
+                    - put-object-retention={"Mode":"COMPLIANCE","Date":"2029-01-01"}: # before
+                        - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2029-01-01T00:00:00Z"}}
+                    - put-object-retention={"Mode":"COMPLIANCE","Date":"2031-01-01"}: # after
+                        - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2031-01-01T00:00:00Z"}}
+                - put-object={"Mode":"COMPLIANCE"} create-mp={"Mode":"COMPLIANCE"} copy-object={"Mode":"COMPLIANCE"}:
+                    - assert err-code={"Code":"InvalidArgument"} # need both, mode and date
+                - put-object={"Date":"2030-01-01"} create-mp={"Date":"2030-01-01"} copy-object={"Date":"2030-01-01"}:
+                    - assert err-code={"Code":"InvalidArgument"} # need both, mode and date
+            - put-obj-lock-config={"Mode":"COMPLIANCE","Days":10}:
+                - assert default-retention={"DefaultRetention":{"Mode":"COMPLIANCE","Days":10}}
+            - put-obj-lock-config={"Mode":"COMPLIANCE","Days":20}:
+                - assert default-retention={"DefaultRetention":{"Mode":"COMPLIANCE","Days":20}}
+                - put-object create-mp copy-object:
+                    - delete-object
+                    - delete-version:
+                        - assert err-code={"Code":"AccessDenied"}
+                - put-object={"Mode":"COMPLIANCE","Date":"2030-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2030-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2030-01-01"}:
+                    - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2030-01-01T00:00:00Z"}}
+                    - delete-object
+                    - delete-version:
+                        - assert err-code={"Code":"AccessDenied"}
+                - put-object={"Mode":"COMPLIANCE","Date":"2000-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2000-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2000-01-01"}:
+                    - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2000-01-01T00:00:00Z"}}
+            - put-obj-lock-config={"Mode":"COMPLIANCE","Years":1}:
+                - assert default-retention={"DefaultRetention":{"Mode":"COMPLIANCE","Years":1}}
+            - put-obj-lock-config={"Mode":"COMPLIANCE","Years":2}:
+                - assert default-retention={"DefaultRetention":{"Mode":"COMPLIANCE","Years":2}}
+                - put-object create-mp copy-object:
+                    - delete-object
+                    - delete-version:
+                        - assert err-code={"Code":"AccessDenied"}
+                - put-object={"Mode":"COMPLIANCE","Date":"2030-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2030-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2030-01-01"}:
+                    - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2030-01-01T00:00:00Z"}}
+                    - delete-object
+                    - delete-version:
+                        - assert err-code={"Code":"AccessDenied"}
+                - put-object={"Mode":"COMPLIANCE","Date":"2000-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2000-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2000-01-01"}:
+                    - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2000-01-01T00:00:00Z"}}
+            - put-obj-lock-config={"Mode":"GOVERNANCE","Days":10}:
+                - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+            - put-obj-lock-config={"Mode":"GOVERNANCE","Days":20}:
+                - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+            - put-obj-lock-config={"Mode":"GOVERNANCE","Years":1}:
+                - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+            - put-obj-lock-config={"Mode":"GOVERNANCE","Years":2}:
+                - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+    - create-bucket={"LockEnabled":true}:
+        - put-obj-lock-config={"Mode":null}:
+            - put-object create-mp copy-object:
+                - get-object-retention:
+                    - assert err-code={"Code":"NoSuchObjectLockConfiguration"}
+                - put-object-retention={"Mode":"COMPLIANCE","Date":"2030-01-01"}:
+                    - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2030-01-01T00:00:00Z"}}
+                    - delete-object
+                    - delete-version:
+                        - assert err-code={"Code":"AccessDenied"}
+                    - put-object-retention={"Mode":"COMPLIANCE","Date":"2029-01-01"}: # before
+                        - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2029-01-01T00:00:00Z"}}
+                    - put-object-retention={"Mode":"COMPLIANCE","Date":"2031-01-01"}: # after
+                        - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2031-01-01T00:00:00Z"}}
+            - put-object={"Mode":"COMPLIANCE","Date":"2030-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2030-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2030-01-01"}:
+                - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2030-01-01T00:00:00Z"}}
+                - delete-object
+                - delete-version:
+                    - assert err-code={"Code":"AccessDenied"}
+                - put-object-retention={"Mode":"COMPLIANCE","Date":"2029-01-01"}: # before
+                    - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2029-01-01T00:00:00Z"}}
+                - put-object-retention={"Mode":"COMPLIANCE","Date":"2031-01-01"}: # after
+                    - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2031-01-01T00:00:00Z"}}
+            - put-object={"Mode":"COMPLIANCE"} create-mp={"Mode":"COMPLIANCE"} copy-object={"Mode":"COMPLIANCE"}:
+                - assert err-code={"Code":"InvalidArgument"} # need both, mode and date
+            - put-object={"Date":"2030-01-01"} create-mp={"Date":"2030-01-01"} copy-object={"Date":"2030-01-01"}:
+                - assert err-code={"Code":"InvalidArgument"} # need both, mode and date
+        - put-obj-lock-config={"Mode":"COMPLIANCE","Days":10}:
+            - assert default-retention={"DefaultRetention":{"Mode":"COMPLIANCE","Days":10}}
+        - put-obj-lock-config={"Mode":"COMPLIANCE","Days":20}:
+            - assert default-retention={"DefaultRetention":{"Mode":"COMPLIANCE","Days":20}}
+            - put-object create-mp copy-object:
+                - delete-object
+                - delete-version:
+                    - assert err-code={"Code":"AccessDenied"}
+            - put-object={"Mode":"COMPLIANCE","Date":"2030-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2030-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2030-01-01"}:
+                - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2030-01-01T00:00:00Z"}}
+                - delete-object
+                - delete-version:
+                    - assert err-code={"Code":"AccessDenied"}
+            - put-object={"Mode":"COMPLIANCE","Date":"2000-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2000-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2000-01-01"}:
+                - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2000-01-01T00:00:00Z"}}
+        - put-obj-lock-config={"Mode":"COMPLIANCE","Years":1}:
+            - assert default-retention={"DefaultRetention":{"Mode":"COMPLIANCE","Years":1}}
+        - put-obj-lock-config={"Mode":"COMPLIANCE","Years":2}:
+            - assert default-retention={"DefaultRetention":{"Mode":"COMPLIANCE","Years":2}}
+            - put-object create-mp copy-object:
+                - delete-object
+                - delete-version:
+                    - assert err-code={"Code":"AccessDenied"}
+            - put-object={"Mode":"COMPLIANCE","Date":"2030-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2030-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2030-01-01"}:
+                - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2030-01-01T00:00:00Z"}}
+                - delete-object
+                - delete-version:
+                    - assert err-code={"Code":"AccessDenied"}
+            - put-object={"Mode":"COMPLIANCE","Date":"2000-01-01"} create-mp={"Mode":"COMPLIANCE","Date":"2000-01-01"} copy-object={"Mode":"COMPLIANCE","Date":"2000-01-01"}:
+                - assert retention={"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2000-01-01T00:00:00Z"}}
+        - put-obj-lock-config={"Mode":"GOVERNANCE","Days":10}:
+            - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+        - put-obj-lock-config={"Mode":"GOVERNANCE","Days":20}:
+            - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+        - put-obj-lock-config={"Mode":"GOVERNANCE","Years":1}:
+            - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+        - put-obj-lock-config={"Mode":"GOVERNANCE","Years":2}:
+            - assert err-code={"Code":"InvalidArgument"} # only COMPLIANCE allowed
+    - create-bucket={"LockEnabled":false}:
+        - assert err-code={"Code":"InvalidArgument"} # only Enabled allowed
