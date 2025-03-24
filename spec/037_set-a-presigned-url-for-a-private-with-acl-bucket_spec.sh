@@ -32,7 +32,7 @@ Describe 'Set a presigned URL for a private with ACL bucket:' category:"BucketSh
       ;;
     "mgc")
     mgc workspace set $profile > /dev/null
-    When run bash ./spec/retry_command.sh "mgc object-storage objects presign --dst $test_bucket_name/$file1_name --expires-in "5m" --raw --server-url http://201.54.14.64"
+    When run bash ./spec/retry_command.sh "mgc object-storage objects presign --dst $test_bucket_name/$file1_name --expires-in "5m" --raw"
     # When run mgc object-storage objects presign --dst $test_bucket_name/$file1_name --expires-in "5m" --raw
     The status should be success
     The output should include X-Amz-Algorithm
