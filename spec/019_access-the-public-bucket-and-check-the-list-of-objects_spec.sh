@@ -1,7 +1,7 @@
 # import functions: # wait_command
 Include ./spec/019_utils.sh
 
-Describe 'Access the public bucket and check the list of objects:' category:"BucketPermission"
+Describe 'Access the public bucket and check the list of objects:' category:"BucketPermission" category:"quick"
   setup(){
     bucket_name="test-019-$(date +%s)"
     file1_name="LICENSE"

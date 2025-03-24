@@ -17,14 +17,14 @@ check_length() {
     fi
 }
 
-Describe 'Create invalid bucket' category:"Skip"
+Describe 'Create invalid bucket' category:"Skip" category:"quick"
   Parameters:matrix
     $PROFILES
     $CLIENTS
   End
 
   bucket_name="foo bar"
-  Describe "with INVALID name with spaces $bucket_name"  id:"002"
+  Describe "with INVALID name with spaces $bucket_name"  id:"002" category:"quick"
     Example "on profile $1 using client $2"
       profile=$1
       client=$2
@@ -56,7 +56,7 @@ Describe 'Create invalid bucket' category:"Skip"
 End
 
 
-Describe 'Create bucket with invalid names' category:"BucketManagement"
+Describe 'Create bucket with invalid names' category:"BucketManagement" category:"quick"
   Parameters:matrix
     $PROFILES
     $CLIENTS
@@ -95,7 +95,7 @@ End
 
 
 %const INVALID_CHARS: "% @ | \\ [ ^ ] { } | &"
-Describe 'Create bucket with invalid characters' category:"Skip" id:007
+Describe 'Create bucket with invalid characters' category:"Skip" id:007 category:"quick"
   Parameters:matrix
     $PROFILES
     $CLIENTS

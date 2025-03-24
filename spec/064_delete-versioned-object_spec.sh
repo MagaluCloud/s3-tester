@@ -16,7 +16,7 @@ get_test_bucket_name(){
 get_uploaded_key(){
   echo "test--$profile--$client--$1--$UNIQUE_SUFIX"
 }
-Describe "setup 064" category:"Skip" id:"064"
+Describe "setup 064" category:"Skip" id:"064" category:"slow"
   Parameters:matrix
     $PROFILES
     $FILTERED_CLIENTS

@@ -2,7 +2,7 @@ is_variable_null() {
   [ -z "$1" ]
 }
 
-Describe 'Set the versioning for a bucket with ACL:' category:"ObjectVersioning"
+Describe 'Set the versioning for a bucket with ACL:' category:"ObjectVersioning" category:"quick"
   setup(){
     bucket_name="test-041-$(date +%s)"
     file1_name="LICENSE"

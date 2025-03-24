@@ -1,4 +1,4 @@
-Describe 'Delete public bucket:' category:"BucketPermission"
+Describe 'Delete public bucket:' category:"BucketPermission" category:"quick"
   setup(){
     bucket_name="test-030-$(date +%s)"
     file1_name="LICENSE"
