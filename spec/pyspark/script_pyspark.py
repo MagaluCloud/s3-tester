@@ -5,13 +5,14 @@ from datetime import datetime, date
 import os
 import pytest
 
-os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-17-openjdk-amd64'
+# os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-17-openjdk-amd64'
 
 session = boto3.Session()
 credentials = session.get_credentials().get_frozen_credentials()
 
 s3_endpoint_url = 'https://br-se1.magaluobjects.com'
 
+s3 = boto3.client('s3')
 def get_spark_session(path_style_access=True):
     try:
         builder = SparkSession.builder.appName("Demo") \
