@@ -5,12 +5,12 @@
 
 name: Periodic Tests by Category
 
-on:
-  schedule:
-    - cron: '0 * * * *'    # Hourly tests
-    - cron: '0 */6 * * *'  # Six-hourly tests
-    - cron: '0 0 * * *'    # Daily tests (midnight)
-    - cron: '0 12 * * *'   # Daily tests (noon)
+on: workflow_dispatch
+  # schedule:
+  #   - cron: '0 * * * *'    # Hourly tests
+  #   - cron: '0 */6 * * *'  # Six-hourly tests
+  #   - cron: '0 0 * * *'    # Daily tests (midnight)
+  #   - cron: '0 12 * * *'   # Daily tests (noon)
   push:
     branches:
       - schedule-all # for debugging purposes, a branch name can be used here
