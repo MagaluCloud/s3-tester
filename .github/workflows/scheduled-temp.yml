@@ -1,0 +1,27 @@
+name: Scheduled test runs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'
+
+env:
+  PROFILES: ${{ secrets.TEMP_PROFILE }}
+
+jobs:
+  TEMP_TEST:
+    runs-on: ubuntu-latest
+    container: ghcr.io/marmotitude/s3-tester:tests
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: "Profiles: ${{ env.TEMP_PROFILES }}; Clients: ${{ env.TEMP_CLIENTS }}; Tests: ${{ env.CRON_TESTS_1 }};"
+        if: github.event.schedule == '0 */12 * * *'  # Certifique-se de que isso seja o cron correto
+        run: |
+          echo copying specs from the workspace volume to the image workspace...
+          cp $GITHUB_WORKSPACE/spec/*.sh /app/spec/.
+          cd /app
+          mgc --version
+          sha256sum `which mgc`
+          ./entrypoint.sh test.sh --profiles "${{ env.TEMP_PROFILES }}" --tests "${{ env.CRON_TESTS_1 }}" --clients "${{ env.TEMP_CLIENTS }}" -- --env NUMBER_OF_WAITS=${{ env.NUMBER_OF_WAITS }} --env SKIP_KNOWN_ISSUES=${{ env.SKIP_KNOWN_ISSUES }} --color
