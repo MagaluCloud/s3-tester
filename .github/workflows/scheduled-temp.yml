@@ -6,7 +6,7 @@ on:
     - cron: '0 */12 * * *'
 
 env:
-  PROFILES: ${{ secrets.TEMP_PROFILE }}
+  PROFILES: ${{ secrets.temp_profile }}
 
 jobs:
   TEMP_TEST:
