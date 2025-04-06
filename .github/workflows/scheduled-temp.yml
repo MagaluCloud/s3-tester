@@ -3,7 +3,7 @@ name: Scheduled test runs
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 */6 * * *'
 
 env:
   PROFILES: ${{ secrets.temp_profile }}
@@ -24,4 +24,4 @@ jobs:
           cd /app
           mgc --version
           sha256sum `which mgc`
-          ./entrypoint.sh test.sh --profiles "${{ env.TEMP_PROFILES }}" --tests "${{ env.CRON_TESTS_1 }}" --clients "${{ env.TEMP_CLIENTS }}" -- --env NUMBER_OF_WAITS=${{ env.NUMBER_OF_WAITS }} --env SKIP_KNOWN_ISSUES=${{ env.SKIP_KNOWN_ISSUES }} --color
+          ./entrypoint.sh test.sh --profiles "${{ vars.TEMP_PROFILES }}" --tests "${{ vars.CRON_TESTS_1 }}" --clients "${{ vars.TEMP_CLIENTS }}" -- --env NUMBER_OF_WAITS=${{ env.NUMBER_OF_WAITS }} --env SKIP_KNOWN_ISSUES=${{ env.SKIP_KNOWN_ISSUES }} --color
