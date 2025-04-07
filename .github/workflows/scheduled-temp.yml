@@ -3,7 +3,7 @@ name: Scheduled test runs
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */1 * * *'
 
 env:
   PROFILES: ${{ secrets.temp_profile }}
@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "Profiles: ${{ vars.TEMP_PROFILES }}; Clients: ${{ vars.TEMP_CLIENTS }}; Tests: ${{ vars.CRON_TESTS_1 }};"
-        if: github.event.schedule == '0 */12 * * *'  # Certifique-se de que isso seja o cron correto
+        if: github.event.schedule == '0 */1 * * *'
         run: |
           echo copying specs from the workspace volume to the image workspace...
           cp $GITHUB_WORKSPACE/spec/*.sh /app/spec/.
