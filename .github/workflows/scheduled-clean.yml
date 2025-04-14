@@ -1,9 +1,9 @@
 name: "Automatic clean"
 
 on: 
-  workflow_dispatch:
-  schedule:
-    - cron: '0 * * * *'    # Hourly clean
+  # workflow_dispatch:
+  # schedule:
+  #   - cron: '0 * * * *'    # Hourly clean
 
 
 env:
