@@ -2,8 +2,8 @@ name: Scheduled test runs
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 */6 * * *'
+  # schedule:
+  #   - cron: '0 */6 * * *'
 
 env:
   PROFILES: ${{ secrets.temp_profile }}
