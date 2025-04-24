@@ -33,10 +33,3 @@ jobs:
           cd /app
           bun --version
           ./entrypoint.sh py-test.sh --profiles ${{ inputs.profiles }} -- ${{ inputs.pytest_args }}
-      - name: CLEAN_BUCKETS
-        run: |
-          for profile in ${{ vars.PROFILES_TO_CLEAN }}; do
-            aws s3 ls --profile $profile | grep "test-" | awk '{print $3}' | while read -r bucket; do
-              aws s3 rb s3://$bucket --profile $profile --force
-            done
-          done
